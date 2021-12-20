@@ -9,6 +9,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 //import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 //import java.util.HashMap;
 //import java.util.Map;
 import java.util.StringTokenizer;
@@ -33,6 +34,8 @@ import weblogic.utils.StringUtils;
 //import com.logica.mansvc.validation.StringConstants;
 import com.logica.skatutil.objectpath.OPS;
 import com.logica.skatutil.objectpath.OPU;
+
+import dk.skat.es.util.DocumentType;
 
 import org.w3c.dom.Element;
 
@@ -89,7 +92,7 @@ public class RequestHelper {
         "			<FejlTekst>" + PLACEHOLDER_ERRORPOINTER + "</FejlTekst>\r\n" + // error pointer
         "			<ServiceID>" + PLACEHOLDER_ORIGINALVALUE + "</ServiceID>\r\n" + // oprindelig attributv�rdi
         "			<Identifikation>\r\n" + 
-        "				<OkonomiskOperatorEORINummer xmlns=\"http://skat.dk/begrebsmodel/2009/01/15/\">" + PLACEHOLDER_EORI_NUMBER + "</OkonomiskOperatorEORINummer>\r\n" + 
+        "				<VirksomhedSENummer xmlns=\"http://skat.dk/begrebsmodel/2009/01/15/\">" + PLACEHOLDER_EORI_NUMBER + "</VirksomhedSENummer>\r\n" + 
         "			</Identifikation>\r\n" + 
         "		</Fejl>\r\n" + 
         "	</SvarReaktion>\r\n";
@@ -292,6 +295,90 @@ public class RequestHelper {
     	}
     }
     
+    
+    public static void addHovedOplysningerSvarForholdBevilling(Object kontekst, Object outputDocument,String seNummer,List<String> listOfErrorCVRs) {
+    	Object[] funktionelFejlArray = null;
+    	if (outputDocument != null) {
+    		funktionelFejlArray = extractFunktionelFejlArray1(outputDocument);
+    	}
+    	if (kontekst == null) return;
+    	SOAPElement hovedOplysningerSvar = getHovedOplysningerSvarForholdBevilling(funktionelFejlArray, getTransactionId(), getTransactionTid(),seNummer, listOfErrorCVRs);
+    	try {
+    		OPS.set(kontekst, "any", hovedOplysningerSvar);
+    	} catch (ClassNotFoundException e) {
+    		getLogger().warn("Error assigning HovedOplysningerSvar to response Kontekst", e);
+    		//e.printStackTrace();
+    	}
+    }
+    
+    
+    private static Object[] extractFunktionelFejlArray1(Object outputDocument) {
+		getLogger().debug("Entering extractFunktionelFejlArray"+outputDocument);
+		if (outputDocument == null) return null;
+		getLogger().debug(outputDocument.getClass().getName());
+		Object[] funktionelFejlArray = null;
+    	try {
+    		Object object = OPU.get(outputDocument, "FunktionelFejlListe.FunktionelFejl");
+    		if (object == null) {
+    			object = OPU.get(outputDocument, "EORIVirksomhedSamling.FunktionelFejlListe.FunktionelFejl");
+    		}
+    		if (object != null && object instanceof Object[]) {
+    			funktionelFejlArray = (Object[]) object;
+    		}
+    	} catch (Exception e) {
+    		System.out.println(" private static Object[] extractFunktionelFejlArray(Object outputDocument) Exception Caught--------->");
+    		funktionelFejlArray = null;
+    	}
+		return funktionelFejlArray;
+	}
+    
+    
+    public static SOAPElement getHovedOplysningerSvarForholdBevilling(Object[] funktionelFejlArray, String transaktionId, String transaktionsTid,String seNummer,List<String> listOfErrorCVRs) {
+    	String hovedOplysninger = hovedOplysningerSvarTemplate;
+
+    	if (transaktionId == null) transaktionId = "";
+    	if (transaktionsTid == null) {
+    		transaktionsTid = generateXmlDateTime();
+    	}
+    	
+    	DocumentType inputType = getInputDocType();
+    	//String useCase = getUseCaseByInputDocument(inputType);
+    	
+		hovedOplysninger = hovedOplysninger.replace(PLACEHOLDER_TRANSACTIONID, transaktionId);
+		hovedOplysninger = hovedOplysninger.replace(PLACEHOLDER_TRANSAKTIONTID, transaktionsTid);
+		//String serviceId = "MAN-" + useCase + "-" + (inputType != null ? inputType.toString() : "Unknown");
+		String serviceId = "EORIStubService";
+		hovedOplysninger = hovedOplysninger.replace(PLACEHOLDER_SERVICEID, serviceId);
+
+    	StringBuffer svarReaktionListe = new StringBuffer();
+    	
+    	for(String listOfErrorCVR : listOfErrorCVRs) {
+    		
+    		svarReaktionListe.append("<SvarReaktion>\r\n"); 
+			svarReaktionListe.append("		<Fejl>\r\n" ); 
+			svarReaktionListe.append("			<FejlNummer>" + PLACEHOLDER_FEJLBEGRUNDELSE + "</FejlNummer>\r\n");
+			svarReaktionListe.append("			<FejlTekst>").append("The company with EORI number ").append(listOfErrorCVR).append(" does not exist in the whitelisted list.").append("</FejlTekst>\r\n");
+			svarReaktionListe.append("			<ServiceID>" + PLACEHOLDER_ORIGINALVALUE + "</ServiceID>\r\n");
+			svarReaktionListe.append("			<Identifikation>\r\n" ); 
+			svarReaktionListe.append("				<VirksomhedSENummer xmlns=\"http://skat.dk/begrebsmodel/2009/01/15/\">" + listOfErrorCVR + "</VirksomhedSENummer>\r\n"); 
+			svarReaktionListe.append("			</Identifikation>\r\n" );
+			svarReaktionListe.append("		</Fejl>\r\n" );
+			svarReaktionListe.append("	</SvarReaktion>\r\n");
+    		
+    	}
+    			
+    	hovedOplysninger = hovedOplysninger.replace(PLACEHOLDER_FEJLLISTE, svarReaktionListe.toString());
+    	
+    	try {
+			SOAPElement element = createSoapBodyElement(hovedOplysninger);
+			return element;
+		} catch (Exception e) {
+			getLogger().debug("Exception creating SOAP element: ",e);
+			getLogger().warn("Unable to create SOAP element", e);
+			//e.printStackTrace();
+			return null;
+		}
+    }
     
     public static void addHovedOplysningerSvar1(Object kontekst, Object outputDocument,String seNumber) {
     	Object[] funktionelFejlArray = null;

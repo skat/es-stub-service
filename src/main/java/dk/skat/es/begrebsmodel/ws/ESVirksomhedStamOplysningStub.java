@@ -2,6 +2,7 @@ package dk.skat.es.begrebsmodel.ws;
 
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jws.WebService;
@@ -46,82 +47,70 @@ public class ESVirksomhedStamOplysningStub extends AbstractServiceImpl implement
 		
 		List<VirksomhedStamOplysning> virksomhedStamOplysningNumbers = request.getVirksomhedStamOplysningSamling().getVirksomhedStamOplysning();
 	    log.info("---------- ESVirksomhedStamOplysningStubService Called - ES Number Found - Begin --------");
-		
-	    
 		VirksomhedStamOplysningSamlingHentO virksomhedStamOplysningSamlingHentO = objectFactory.createVirksomhedStamOplysningSamlingHentO();
-
-	    
-	    	EORIServiceDAO eoriService = new EORIServiceDAO();
-	    	EORIVirkWhitelist eoriVirkWhitelist = new EORIVirkWhitelist();
-	    	
-			for(VirksomhedStamOplysning seNumber : virksomhedStamOplysningNumbers) {
-			    log.info("---------- Given ES Number   --------------->"+seNumber.getVirksomhedSENummer().toString());
-
-					eoriVirkWhitelist = eoriService.getEORINumber(seNumber.getVirksomhedSENummer().toString());
-			     log.info("---------- ESVirksomhedStamOplysningStubService Called - ES Number Found - End   --------");
-		
-		
-		handleHovedOplysninger(request, virksomhedStamOplysningSamlingHentO);
-
+    	EORIServiceDAO eoriService = new EORIServiceDAO();
+    	EORIVirkWhitelist eoriVirkWhitelist = new EORIVirkWhitelist();
+    	
+		List<String> listOfNonWhiteListedCVRs = new ArrayList<String>();
 		VirksomhedStamOplysningSamling virksomhedStamOplysningSamling = objectFactory.createVirksomhedStamOplysningSamlingHentOTypeVirksomhedStamOplysningSamling();
 		VirksomhedStamOplysningSamlingHentOType.VirksomhedStamOplysningSamling.VirksomhedStamOplysning  
 		      virksomhedStamOplysning = objectFactory.createVirksomhedStamOplysningSamlingHentOTypeVirksomhedStamOplysningSamlingVirksomhedStamOplysning();
-		
-		
-		if(eoriVirkWhitelist.getEoriNumber().length() > 0) { 
-			
-			virksomhedStamOplysning.setVirksomhedSENummer(new BigInteger(eoriVirkWhitelist.getEoriNumber()));
-			//virksomhedStamOplysning.setVirksomhedSENummer(new BigInteger("10200113"));
-			virksomhedStamOplysning.setVirksomhedCVRNummer(eoriVirkWhitelist.getCvrNumber());
-			//virksomhedStamOplysning.setVirksomhedCVRNummer("19552101");
-			//virksomhedStamOplysning.setVirksomhedStartDato(DateUtil.dateToXmlGregorianCalendar(new Date()));
-			virksomhedStamOplysning.setVirksomhedStartDato(DateUtil.dateToXmlGregorianCalendar(eoriVirkWhitelist.getVirk_start_dto()));
-			virksomhedStamOplysning.setVirksomhedNavn(VirksomhedNavnMapping.mapVirksomhedNavn(eoriVirkWhitelist));
-			virksomhedStamOplysning.setDriftForm(DriftFormMapping.mapMyndighed());
-			virksomhedStamOplysning.setFogedområdeNummer("21");
-			virksomhedStamOplysning.setBeregnetRegnskabPeriode(BeregnetRegnskabPeriodeMapping.beregnetRegnskabPeriode());
-			virksomhedStamOplysning.setMyndighed(MyndighedMapping.mapMyndighed());
-			
-			
-			PrimærAdresse primærAdresse = objectFactory.createVirksomhedStamOplysningSamlingHentOTypeVirksomhedStamOplysningSamlingVirksomhedStamOplysningPrimærAdresse();
-			VirksomhedKontaktOplysningStrukturType virksomhedKontaktOplysningStrukturType = objectFactory.createVirksomhedKontaktOplysningStrukturType();
-			
-			virksomhedKontaktOplysningStrukturType.setTelefonListe(TelefonListeMapping.mapTelefonAddress(eoriVirkWhitelist));
-			virksomhedKontaktOplysningStrukturType.setEmailAdresseListe(EmailAdresseListeMapping.mapEmailAddress());
-			virksomhedKontaktOplysningStrukturType.setFaxListe(FaxListeMapping.mapFaxListe());
-			
-			virksomhedStamOplysning.setPrimørAdresse(primærAdresse);
-			virksomhedKontaktOplysningStrukturType.setVirksomhedAdresseStruktur(VirksomhedAdresseStrukturMapping.mapVirksomhedAdresseStruktur());
-			primærAdresse.setVirksomhedKontaktOplysningStruktur(virksomhedKontaktOplysningStrukturType);
-			virksomhedStamOplysningSamling.getVirksomhedStamOplysning().add(virksomhedStamOplysning);
-			
-			virksomhedStamOplysningSamlingHentO.setKontekst(KontekstTypeMapping.mapKontekstType());
-			virksomhedStamOplysningSamlingHentO.setVirksomhedStamOplysningSamling(virksomhedStamOplysningSamling);	
-			
-			addHovedOplysningerSvar(virksomhedStamOplysningSamlingHentO, virksomhedStamOplysningSamling);
 
-			//return virksomhedStamOplysningSamlingHentO;
+	    for(VirksomhedStamOplysning seNumber : virksomhedStamOplysningNumbers) {
+			    log.info("---------- Given ES Number   --------------->"+seNumber.getVirksomhedSENummer().toString());
+					eoriVirkWhitelist = eoriService.getEORINumber(seNumber.getVirksomhedSENummer().toString());
+     		    log.info("---------- ESVirksomhedStamOplysningStubService Called - ES Number Found - End   --------");
+				handleHovedOplysninger(request, virksomhedStamOplysningSamlingHentO);
 
-
-		} else {
+			if(eoriVirkWhitelist.getEoriNumber().length() > 0) { 
 			
+				virksomhedStamOplysning.setVirksomhedSENummer(new BigInteger(eoriVirkWhitelist.getEoriNumber()));
+				virksomhedStamOplysning.setVirksomhedCVRNummer(eoriVirkWhitelist.getCvrNumber());
+				virksomhedStamOplysning.setVirksomhedStartDato(DateUtil.dateToXmlGregorianCalendar(eoriVirkWhitelist.getVirk_start_dto()));
+				virksomhedStamOplysning.setVirksomhedNavn(VirksomhedNavnMapping.mapVirksomhedNavn(eoriVirkWhitelist));
+				virksomhedStamOplysning.setDriftForm(DriftFormMapping.mapMyndighed());
+				virksomhedStamOplysning.setFogedområdeNummer("21");
+				virksomhedStamOplysning.setBeregnetRegnskabPeriode(BeregnetRegnskabPeriodeMapping.beregnetRegnskabPeriode());
+				virksomhedStamOplysning.setMyndighed(MyndighedMapping.mapMyndighed());
+				
+				PrimærAdresse primærAdresse = objectFactory.createVirksomhedStamOplysningSamlingHentOTypeVirksomhedStamOplysningSamlingVirksomhedStamOplysningPrimærAdresse();
+				VirksomhedKontaktOplysningStrukturType virksomhedKontaktOplysningStrukturType = objectFactory.createVirksomhedKontaktOplysningStrukturType();
+				
+				virksomhedKontaktOplysningStrukturType.setTelefonListe(TelefonListeMapping.mapTelefonAddress(eoriVirkWhitelist));
+				virksomhedKontaktOplysningStrukturType.setEmailAdresseListe(EmailAdresseListeMapping.mapEmailAddress());
+				virksomhedKontaktOplysningStrukturType.setFaxListe(FaxListeMapping.mapFaxListe());
+				
+				virksomhedStamOplysning.setPrimørAdresse(primærAdresse);
+				virksomhedKontaktOplysningStrukturType.setVirksomhedAdresseStruktur(VirksomhedAdresseStrukturMapping.mapVirksomhedAdresseStruktur());
+				primærAdresse.setVirksomhedKontaktOplysningStruktur(virksomhedKontaktOplysningStrukturType);
+				virksomhedStamOplysningSamling.getVirksomhedStamOplysning().add(virksomhedStamOplysning);
+				
+				virksomhedStamOplysningSamlingHentO.setKontekst(KontekstTypeMapping.mapKontekstType());
+				virksomhedStamOplysningSamlingHentO.setVirksomhedStamOplysningSamling(virksomhedStamOplysningSamling);	
+				
+				addHovedOplysningerSvar(virksomhedStamOplysningSamlingHentO, virksomhedStamOplysningSamling);
+
+		    } 
+			if (eoriVirkWhitelist.getEoriNumber().length() == 0) {
+					log.info("################# ESVirksomhedStamOplysningStubService Called - EORI Number NOT Found - Begin ######");
+					log.info("********      Given EORI Number   ********--->" + seNumber.getVirksomhedSENummer().toString());
+					listOfNonWhiteListedCVRs.add(seNumber.getVirksomhedSENummer().toString());
+					log.info("############ ESVirksomhedStamOplysningStubService Called - EORI Number NOT Found - End ############");
+			}
+	  	}
+	    
+	    if(listOfNonWhiteListedCVRs.size() > 0) {
 			Object outDoc = null;
-			//virksomhedStamOplysningSamlingHentO.setKontekst(kontekstType);
 			outDoc = RequestHelper.svarReaktionTemplate;
 			RequestHelper.setOutputErrorDocument(outDoc);
 			outDoc = RequestHelper.getOutputErrorDocument();
-
-			addHovedOplysningerSvar1(virksomhedStamOplysningSamlingHentO, outDoc,seNumber.getVirksomhedSENummer().toString());
-			
-			//return virksomhedStamOplysningSamlingHentO;
-
+			virksomhedStamOplysningSamlingHentO.setKontekst(KontekstTypeMapping.mapKontekstType());
+			virksomhedStamOplysningSamlingHentO.setVirksomhedStamOplysningSamling(virksomhedStamOplysningSamling);	
+			for(int i=0 ; i<listOfNonWhiteListedCVRs.size() ; i++) {
+				addHovedOplysningerSvarForholdBevilling(virksomhedStamOplysningSamlingHentO, outDoc, listOfNonWhiteListedCVRs.get(i),listOfNonWhiteListedCVRs);
+			}
 		}
-		
-	    	}
-			return virksomhedStamOplysningSamlingHentO;
-
-		
-		//return virksomhedStamOplysningSamlingHentO;
+	    return virksomhedStamOplysningSamlingHentO;
 	}
 
 	public KompenserTransSvarType getKompenserTrans(KompenserTransType request) {

@@ -2,6 +2,7 @@ package dk.skat.es.begrebsmodel.ws;
 
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jws.WebService;
@@ -42,9 +43,9 @@ public class ESRegistreringForholdBevillingStub extends AbstractServiceImpl impl
 		RegistreringForholdBevillingHentOType.VirksomhedListe.Virksomhed virksomhed =  objectFactory.createRegistreringForholdBevillingHentOTypeVirksomhedListeVirksomhed();
 		BevillingForholdListe bevillingForholdListe = objectFactory.createRegistreringForholdBevillingHentOTypeVirksomhedListeVirksomhedBevillingForholdListe();
 		KontekstType kontekstType = objectFactory.createKontekstType();
-    	
 		EORIServiceDAO eoriService = new EORIServiceDAO();
     	EORIVirkWhitelist eoriVirkWhitelist = new EORIVirkWhitelist();
+		List<String> listOfNonWhiteListedCVRs = new ArrayList<String>();
     	
     	for(Virksomhed seNummer : virksomheds) {
 			log.info("---------- Given ES Number   --------------->  "+seNummer.getVirksomhedSENummer().toString());
@@ -63,12 +64,24 @@ public class ESRegistreringForholdBevillingStub extends AbstractServiceImpl impl
 				addHovedOplysningerSvar(registreringForholdBevillingHentO, virksomhedListe);
 				log.info("---------- ESRegistreringForholdBevillingStubService Called - ES Number Found - End   -------");
 				
-			}  else {
-				Object outDoc = null;
-				outDoc = RequestHelper.svarReaktionTemplate;
-				RequestHelper.setOutputErrorDocument(outDoc);
-				outDoc = RequestHelper.getOutputErrorDocument();
-				addHovedOplysningerSvar1(registreringForholdBevillingHentO, outDoc,seNummer.getVirksomhedSENummer().toString());
+			} 
+			if (eoriVirkWhitelist.getEoriNumber().length() == 0) {
+					log.info("################# ESRegistreringForholdBevillingService Called - EORI Number NOT Found - Begin ######");
+					log.info("********      Given EORI Number   ********--->" + seNummer);
+					listOfNonWhiteListedCVRs.add(seNummer.getVirksomhedSENummer().toString());
+					log.info("############ ESRegistreringForholdBevillingService Called - EORI Number NOT Found - End ############");
+			}
+		}
+    	
+    	if(listOfNonWhiteListedCVRs.size() > 0) {
+			Object outDoc = null;
+			outDoc = RequestHelper.svarReaktionTemplate;
+			RequestHelper.setOutputErrorDocument(outDoc);
+			outDoc = RequestHelper.getOutputErrorDocument();
+			registreringForholdBevillingHentO.setKontekst(kontekstType);
+	    	registreringForholdBevillingHentO.setVirksomhedListe(virksomhedListe);
+			for(int i=0 ; i<listOfNonWhiteListedCVRs.size() ; i++) {
+				addHovedOplysningerSvarForholdBevilling(registreringForholdBevillingHentO, outDoc, listOfNonWhiteListedCVRs.get(i),listOfNonWhiteListedCVRs);
 			}
 		}
 		return registreringForholdBevillingHentO;

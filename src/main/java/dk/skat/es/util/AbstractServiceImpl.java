@@ -1,12 +1,16 @@
 package dk.skat.es.util;
 
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Element;
 
 import com.logica.skatutil.objectpath.OPS;
 import com.logica.skatutil.objectpath.OPU;
+
+import dk.skat.es.util.RequestHelper;
 
 
 public abstract class AbstractServiceImpl {
@@ -49,4 +53,12 @@ public abstract class AbstractServiceImpl {
     	}
 		RequestHelper.addHovedOplysningerSvar1(OPU.get(output, "kontekst"), outDoc,seNumber);
     }
+    
+    protected void addHovedOplysningerSvarForholdBevilling(Object output, Object outDoc,String seNummer,List<String> listOfErrorCVRs) {
+    	if (OPU.get(output, "kontekst") == null) {
+    		OPS.seti(output, "kontekst.any", null);
+    	}
+		RequestHelper.addHovedOplysningerSvarForholdBevilling(OPU.get(output, "kontekst"), outDoc,seNummer,listOfErrorCVRs);
+    }
+
 }
