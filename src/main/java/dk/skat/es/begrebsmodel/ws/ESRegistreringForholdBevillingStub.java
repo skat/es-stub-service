@@ -79,7 +79,7 @@ public class ESRegistreringForholdBevillingStub extends AbstractServiceImpl impl
 			RequestHelper.setOutputErrorDocument(outDoc);
 			outDoc = RequestHelper.getOutputErrorDocument();
 			registreringForholdBevillingHentO.setKontekst(kontekstType);
-	    	registreringForholdBevillingHentO.setVirksomhedListe(virksomhedListe);
+	    	//registreringForholdBevillingHentO.setVirksomhedListe(virksomhedListe);
 			for(int i=0 ; i<listOfNonWhiteListedCVRs.size() ; i++) {
 				addHovedOplysningerSvarForholdBevilling(registreringForholdBevillingHentO, outDoc, listOfNonWhiteListedCVRs.get(i),listOfNonWhiteListedCVRs);
 			}

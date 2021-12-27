@@ -92,10 +92,10 @@ public class ESVirksomhedStamOplysningStub extends AbstractServiceImpl implement
 
 		    } 
 			if (eoriVirkWhitelist.getEoriNumber().length() == 0) {
-					log.info("################# ESVirksomhedStamOplysningStubService Called - EORI Number NOT Found - Begin ######");
+					log.info("################# ESVirksomhedStamOplysningStubService Called - ES Number NOT Found - Begin ######");
 					log.info("********      Given EORI Number   ********--->" + seNumber.getVirksomhedSENummer().toString());
 					listOfNonWhiteListedCVRs.add(seNumber.getVirksomhedSENummer().toString());
-					log.info("############ ESVirksomhedStamOplysningStubService Called - EORI Number NOT Found - End ############");
+					log.info("############ ESVirksomhedStamOplysningStubService Called - ES Number NOT Found - End ############");
 			}
 	  	}
 	    
@@ -104,8 +104,9 @@ public class ESVirksomhedStamOplysningStub extends AbstractServiceImpl implement
 			outDoc = RequestHelper.svarReaktionTemplate;
 			RequestHelper.setOutputErrorDocument(outDoc);
 			outDoc = RequestHelper.getOutputErrorDocument();
+			//virksomhedStamOplysningSamling.getVirksomhedStamOplysning().add(virksomhedStamOplysning);
 			virksomhedStamOplysningSamlingHentO.setKontekst(KontekstTypeMapping.mapKontekstType());
-			virksomhedStamOplysningSamlingHentO.setVirksomhedStamOplysningSamling(virksomhedStamOplysningSamling);	
+			//virksomhedStamOplysningSamlingHentO.setVirksomhedStamOplysningSamling(virksomhedStamOplysningSamling);	
 			for(int i=0 ; i<listOfNonWhiteListedCVRs.size() ; i++) {
 				addHovedOplysningerSvarForholdBevilling(virksomhedStamOplysningSamlingHentO, outDoc, listOfNonWhiteListedCVRs.get(i),listOfNonWhiteListedCVRs);
 			}
