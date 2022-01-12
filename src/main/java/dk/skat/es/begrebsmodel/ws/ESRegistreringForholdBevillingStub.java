@@ -40,23 +40,51 @@ public class ESRegistreringForholdBevillingStub extends AbstractServiceImpl impl
 		handleHovedOplysninger(request, registreringForholdBevillingHentO);
 	    
 		RegistreringForholdBevillingHentOType.VirksomhedListe virksomhedListe = objectFactory.createRegistreringForholdBevillingHentOTypeVirksomhedListe();
-		RegistreringForholdBevillingHentOType.VirksomhedListe.Virksomhed virksomhed =  objectFactory.createRegistreringForholdBevillingHentOTypeVirksomhedListeVirksomhed();
-		BevillingForholdListe bevillingForholdListe = objectFactory.createRegistreringForholdBevillingHentOTypeVirksomhedListeVirksomhedBevillingForholdListe();
 		KontekstType kontekstType = objectFactory.createKontekstType();
 		EORIServiceDAO eoriService = new EORIServiceDAO();
     	EORIVirkWhitelist eoriVirkWhitelist = new EORIVirkWhitelist();
 		List<String> listOfNonWhiteListedCVRs = new ArrayList<String>();
+		
+
     	
     	for(Virksomhed seNummer : virksomheds) {
+    		
+    		RegistreringForholdBevillingHentOType.VirksomhedListe.Virksomhed virksomhed =  objectFactory.createRegistreringForholdBevillingHentOTypeVirksomhedListeVirksomhed();
+    		BevillingForholdListe bevillingForholdListe = objectFactory.createRegistreringForholdBevillingHentOTypeVirksomhedListeVirksomhedBevillingForholdListe();
+
 			log.info("---------- Given ES Number   --------------->  "+seNummer.getVirksomhedSENummer().toString());
+			
+			
+			
 			//eoriVirkWhitelist = eoriService.getEORINumber(seNummer.getVirksomhedSENummer().toString());
 			eoriVirkWhitelist = eoriService.getEORINumberBasedOnPlightKod(seNummer.getVirksomhedSENummer().toString(),seNummer.getPligtKode());
+			
+			
+			
 			if(eoriVirkWhitelist.getEoriNumber().length() > 0) { 
 				
 				eoriVirkWhitelist.getVirk_start_dto();
 		    	virksomhed.setVirksomhedSENummer(new BigInteger(eoriVirkWhitelist.getEoriNumber()));
 		    	virksomhedListe.getVirksomhed().add(virksomhed);
-		    	bevillingForholdListe.getBevillingForhold().add(BevillingForholdMapping.mapBevillingForhold(eoriVirkWhitelist));
+		    	
+				List<EORIVirkWhitelist> eoriVirkWhitelists = new ArrayList<EORIVirkWhitelist>();
+
+		    	
+				eoriVirkWhitelists = eoriService.getEORINumberBasedOnPlightKod1(seNummer.getVirksomhedSENummer().toString(),seNummer.getPligtKode());
+				
+				System.out.println("eoriVirkWhitelists---------------------->"+eoriVirkWhitelists.size());
+				
+				for(EORIVirkWhitelist esVirkWhitelist : eoriVirkWhitelists) {
+					
+					System.out.println("@@@@@@@@@@@@ esVirkWhitelist @@@@@@@@@@@@@--->"+esVirkWhitelist.getBev_kod());
+					
+			    	bevillingForholdListe.getBevillingForhold().add(BevillingForholdMapping.mapBevillingForhold(esVirkWhitelist));
+
+				}
+
+				//bevillingForholdListe.getBevillingForhold().add(BevillingForholdMapping.mapBevillingForhold(eoriVirkWhitelist));
+		    	
+		    	
 		    	virksomhed.setBevillingForholdListe(bevillingForholdListe);
 		    	registreringForholdBevillingHentO.setKontekst(kontekstType);
 		    	registreringForholdBevillingHentO.setVirksomhedListe(virksomhedListe);
@@ -79,7 +107,7 @@ public class ESRegistreringForholdBevillingStub extends AbstractServiceImpl impl
 			RequestHelper.setOutputErrorDocument(outDoc);
 			outDoc = RequestHelper.getOutputErrorDocument();
 			registreringForholdBevillingHentO.setKontekst(kontekstType);
-	    	registreringForholdBevillingHentO.setVirksomhedListe(virksomhedListe);
+	    	//registreringForholdBevillingHentO.setVirksomhedListe(virksomhedListe);
 			for(int i=0 ; i<listOfNonWhiteListedCVRs.size() ; i++) {
 				addHovedOplysningerSvarForholdBevilling(registreringForholdBevillingHentO, outDoc, listOfNonWhiteListedCVRs.get(i),listOfNonWhiteListedCVRs);
 			}
@@ -88,7 +116,6 @@ public class ESRegistreringForholdBevillingStub extends AbstractServiceImpl impl
 	}
 
 	public dk.skat.begrebsmodel._2009._01._15.KompenserTransSvarType getKompenserTrans(dk.skat.begrebsmodel._2009._01._15.KompenserTransType request) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	

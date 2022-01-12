@@ -1,8 +1,69 @@
 package dk.skat.es.dto;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 public class EORIVirkWhitelist {
+
+	public EORIVirkWhitelist() {
+
+	}
+
+	public EORIVirkWhitelist(String eoriNumber, String firma_nvn, String firma_nvn_kort, String postNumber,
+			String by_nvn, String adresseNavn, String tlf_nr, Date virk_adr_tlf_nr_start_dto,
+			Date virk_adr_tlf_nr_slut_dto, String cvrNumber, Date virk_start_dto, String start_hus_nr,
+			String virk_adr_lb_nr, String vej_nvn, Date bev_forh_start_dto, String pligt_kod, String bev_journal_nr,
+			String bev_kod) {
+		super();
+		this.eoriNumber = eoriNumber;
+		Firma_nvn = firma_nvn;
+		Firma_nvn_kort = firma_nvn_kort;
+		this.postNumber = postNumber;
+		this.by_nvn = by_nvn;
+		this.adresseNavn = adresseNavn;
+		this.tlf_nr = tlf_nr;
+		this.virk_adr_tlf_nr_start_dto = virk_adr_tlf_nr_start_dto;
+		this.virk_adr_tlf_nr_slut_dto = virk_adr_tlf_nr_slut_dto;
+		this.cvrNumber = cvrNumber;
+		this.virk_start_dto = virk_start_dto;
+		this.start_hus_nr = start_hus_nr;
+		this.virk_adr_lb_nr = virk_adr_lb_nr;
+		this.vej_nvn = vej_nvn;
+		this.bev_forh_start_dto = bev_forh_start_dto;
+		this.pligt_kod = pligt_kod;
+		this.bev_journal_nr = bev_journal_nr;
+		this.bev_kod = bev_kod;
+	}
+
+	public EORIVirkWhitelist(String eoriNumber, String firma_nvn, String firma_nvn_kort, String postNumber,
+			String by_nvn, String adresseNavn, String tlf_nr, Timestamp virk_adr_tlf_nr_start_dto, String cvrNumber,
+			Timestamp virk_start_dto, Timestamp virk_adr_tlf_nr_slut_dto, Timestamp bev_forh_start_dto,
+			String pligt_kod, String bev_journal_nr, String bev_kod, String virk_adr_lb_nr, String start_hus_nr) {
+
+		this.eoriNumber = eoriNumber;
+		this.Firma_nvn = firma_nvn;
+		this.Firma_nvn_kort = firma_nvn_kort;
+		this.postNumber = postNumber;
+		this.by_nvn = by_nvn;
+		this.adresseNavn = adresseNavn;
+		this.tlf_nr = tlf_nr;
+		this.virk_adr_tlf_nr_start_dto = virk_adr_tlf_nr_start_dto;
+		this.cvrNumber = cvrNumber;
+		this.virk_start_dto = virk_start_dto;
+		this.virk_adr_tlf_nr_slut_dto = virk_adr_tlf_nr_slut_dto;
+		this.bev_forh_start_dto = bev_forh_start_dto;
+		this.pligt_kod = pligt_kod;
+		this.bev_journal_nr = bev_journal_nr;
+		this.bev_kod = bev_kod;
+		this.virk_adr_lb_nr = virk_adr_lb_nr;
+		this.start_hus_nr = start_hus_nr;
+
+//		
+//		
+//		this.vej_nvn = vej_nvn;
+		// this.bev_forh_start_dto = timestamp3;
+
+	}
 
 	private String eoriNumber = "";
 
@@ -25,25 +86,21 @@ public class EORIVirkWhitelist {
 	private String cvrNumber;
 
 	private Date virk_start_dto;
-	
+
 	private String start_hus_nr;
 
-	//private int virk_adr_lb_nr;
-	
+	// private int virk_adr_lb_nr;
+
 	private String virk_adr_lb_nr;
-	
+
 	private String vej_nvn;
 
-	
-
-	
-	/*public int getVirk_adr_lb_nr() {
-		return virk_adr_lb_nr;
-	}
-
-	public void setVirk_adr_lb_nr(int virk_adr_lb_nr) {
-		this.virk_adr_lb_nr = virk_adr_lb_nr;
-	}*/
+	/*
+	 * public int getVirk_adr_lb_nr() { return virk_adr_lb_nr; }
+	 * 
+	 * public void setVirk_adr_lb_nr(int virk_adr_lb_nr) { this.virk_adr_lb_nr =
+	 * virk_adr_lb_nr; }
+	 */
 
 	public String getVej_nvn() {
 		return vej_nvn;
@@ -70,7 +127,7 @@ public class EORIVirkWhitelist {
 	}
 
 	private Date bev_forh_start_dto;
-	
+
 	public Date getBev_forh_start_dto() {
 		return bev_forh_start_dto;
 	}
@@ -105,7 +162,7 @@ public class EORIVirkWhitelist {
 
 	private String pligt_kod;
 	private String bev_journal_nr;
-	private String bev_kod; 
+	private String bev_kod;
 
 	public Date getVirk_adr_tlf_nr_slut_dto() {
 		return virk_adr_tlf_nr_slut_dto;
