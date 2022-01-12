@@ -75,11 +75,7 @@ public class ESRegistreringForholdBevillingStub extends AbstractServiceImpl impl
 				System.out.println("eoriVirkWhitelists---------------------->"+eoriVirkWhitelists.size());
 				
 				for(EORIVirkWhitelist esVirkWhitelist : eoriVirkWhitelists) {
-					
-					System.out.println("@@@@@@@@@@@@ esVirkWhitelist @@@@@@@@@@@@@--->"+esVirkWhitelist.getBev_kod());
-					
 			    	bevillingForholdListe.getBevillingForhold().add(BevillingForholdMapping.mapBevillingForhold(esVirkWhitelist));
-
 				}
 
 				//bevillingForholdListe.getBevillingForhold().add(BevillingForholdMapping.mapBevillingForhold(eoriVirkWhitelist));

@@ -115,7 +115,6 @@ public class EORIServiceDAO {
 				sqlStatement = sqlConnection.createStatement();
 	            sqlResultSet = sqlStatement.executeQuery(strSql.toString());
 	            
-	            System.out.println("************  sqlResultSet *******************----->"+sqlResultSet.getFetchSize());
 	            while(sqlResultSet.next()) {
 	                 
 	                EORIVirkWhitelist virkWhitelist = new EORIVirkWhitelist(sqlResultSet.getString(1),
@@ -135,32 +134,7 @@ public class EORIServiceDAO {
 	                		sqlResultSet.getString(15),
 	                		sqlResultSet.getString(16),
 	                		sqlResultSet.getString(17));
-
-	            	/*virkWhitelist.setEoriNumber(sqlResultSet.getString(1));
-	            	virkWhitelist.setFirma_nvn(sqlResultSet.getString(2));
-	            	virkWhitelist.setFirma_nvn_kort(sqlResultSet.getString(3));
-	            	virkWhitelist.setPostNumber(sqlResultSet.getString(4));
-	            	virkWhitelist.setBy_nvn(sqlResultSet.getString(5));
-	            	virkWhitelist.setAdresseNavn(sqlResultSet.getString(6));
-	            	virkWhitelist.setTlf_nr(sqlResultSet.getString(7));
-	            	virkWhitelist.setVirk_adr_tlf_nr_start_dto(sqlResultSet.getTimestamp(8));
-	            	virkWhitelist.setCvrNumber(sqlResultSet.getString(9));
-	            	virkWhitelist.setVirk_start_dto(sqlResultSet.getTimestamp(10));
-	            	virkWhitelist.setVirk_adr_tlf_nr_slut_dto(sqlResultSet.getTimestamp(11));
-	            	
-	            	virkWhitelist.setBev_forh_start_dto(sqlResultSet.getTimestamp(12));
-	            	virkWhitelist.setPligt_kod(sqlResultSet.getString(13));
-	            	virkWhitelist.setBev_journal_nr(sqlResultSet.getString(14));
-	            	System.out.println("sqlResultSet.getString(15)-------->"+sqlResultSet.getString(15));
-	            	virkWhitelist.setBev_kod(sqlResultSet.getString(15));
-	            	
-	            	//virkWhitelist.setVirk_adr_lb_nr(sqlResultSet.getInt(16));
-	            	virkWhitelist.setVirk_adr_lb_nr(sqlResultSet.getString(16));
-	            	virkWhitelist.setStart_hus_nr(sqlResultSet.getString(17));*/
-	            	
-	                //if(!virkWhitelists.contains(virkWhitelists.getBev_kod())) {
 		            	virkWhitelists.add(virkWhitelist);
-	                //}
 	            }
 	            
 			} catch (NamingException e) {
@@ -174,20 +148,6 @@ public class EORIServiceDAO {
             DB.close(sqlStatement);
             EORIServiceDAO.disconnectFromPool(sqlConnection); 
         }
-        
-        
-      /*  Set<EORIVirkWhitelist> eoriSet = new HashSet<EORIVirkWhitelist>();
-		eoriSet.addAll(virkWhitelists);
-		virkWhitelists.clear();
-		virkWhitelists.addAll(eoriSet);*/
-        
-        for(EORIVirkWhitelist esVirkWhitelist : virkWhitelists) {
-			
-			System.out.println("################## esVirkWhitelist ############################--->"+esVirkWhitelist.getBev_kod());
-			
-
-		}
-        
         return virkWhitelists;
     }
 	
